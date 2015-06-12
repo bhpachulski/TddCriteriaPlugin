@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="PluginCopyTest.actionSet"
+            label="Sample Action Set"
+            visible="true">
+         
+         <menu
+               id="sampleMenu"
+               label="Sample &amp;Menu">
+            <separator
+                  name="sampleGroup">
+            </separator>
+         </menu>
+         
+         <action
+               class="plugincopytest.actions.SampleAction"
+               icon="icons/sample.gif"
+               id="plugincopytest.actions.SampleAction"
+               label="&amp;Sample Action"
+               menubarPath="sampleMenu/sampleGroup"
+               toolbarPath="sampleGroup"
+               tooltip="Hello, Eclipse world">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+   </extension>
+   
+   <extension point="org.eclipse.ui.popupMenus">
+      
+      <objectContribution
+            id="PluginCopyTest.contribution1"
+            objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true">
+            
+         <menu id="PluginCopyTest.menu1"
+               label="TDD Criteria"
+               path="additions">
+            
+            <separator name="group1"> </separator>
+         
+         </menu>
+         
+         <action class="plugincopytest.popup.actions.NewAction"
+               enablesFor="1"
+               id="PluginCopyTest.newAction"
+               label="Receber conjunto All-Pairs"
+               menubarPath="PluginCopyTest.menu1/group1">
+         </action>
+         
+      </objectContribution>
+   </extension>
+   
+	<extension point="org.eclipse.jdt.junit.testRunListeners">
+		<testRunListener class="plugincopytest.extensionpoint.JUnitReportTestRunListener"/>
+	</extension>
+   
+</plugin>
