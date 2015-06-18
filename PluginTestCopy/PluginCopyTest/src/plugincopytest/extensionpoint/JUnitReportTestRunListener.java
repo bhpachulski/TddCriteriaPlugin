@@ -84,6 +84,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		TestCase tc = new TestCase();
 		tc.setClassName(testCaseElement.getTestClassName());
 		tc.setMethodName(testCaseElement.getTestMethodName());
+		//tc.setPackageName("");
 
 		if (testCaseElement.getFailureTrace() != null) {
 			tc.setFailDetail(testCaseElement.getFailureTrace());

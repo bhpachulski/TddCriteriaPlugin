@@ -6,10 +6,21 @@ public class TestCase {
 	
 	private String className;
 	private String methodName;
+	private String packageName;
 	
 	private boolean failed = false;
 	
 	private FailureTrace failDetail;
+	
+	
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
 
 	public String getClassName() {
 		return className;
