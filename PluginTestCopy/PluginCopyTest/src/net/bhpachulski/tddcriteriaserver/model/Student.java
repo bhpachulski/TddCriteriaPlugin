@@ -4,6 +4,12 @@ public class Student {
 	 
     private int id;
     private String name;
+    
+    public Student() {}
+    
+    public Student(String name) {
+    	this.setName(name);
+    }
 
     public int getId() {
         return id;

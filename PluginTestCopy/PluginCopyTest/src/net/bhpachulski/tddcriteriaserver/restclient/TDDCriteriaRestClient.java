@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
+import net.bhpachulski.tddcriteriaserver.model.StudentFile;
 import net.bhpachulski.tddcriteriaserver.restclient.url.CriteriaTddGenericUrl;
 
 import com.google.api.client.http.ByteArrayContent;
@@ -25,8 +27,8 @@ import com.google.gson.Gson;
 
 public class TDDCriteriaRestClient {
 
-	static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-	static final GsonFactory JSON_FACTORY = new GsonFactory();
+	private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+	private static final GsonFactory JSON_FACTORY = new GsonFactory();
 	private Gson gson = new Gson();
 
 	HttpRequestFactory requestFactory = HTTP_TRANSPORT
@@ -37,7 +39,7 @@ public class TDDCriteriaRestClient {
 				}
 			});
 
-	public void sendStudentFile(Integer studentId, File f) {
+	public String sendStudentFile(Integer studentId, File f) {
 		try {
 
 			MultipartContent content = new MultipartContent()
@@ -51,17 +53,18 @@ public class TDDCriteriaRestClient {
 					fileContent);
 			content.addPart(partFile);
 
-			// Map<String, String> parameters = Maps.newHashMap();
-			// parameters.put("studentId", studentId.toString());
+			Map<String, String> parameters = Maps.newHashMap();
+			parameters.put("studentId", studentId.toString());
+			parameters.put("fileType", FileType.JUNIT.getId().toString()); 
 
-			// for (String name : parameters.keySet()) {
-			MultipartContent.Part part = new MultipartContent.Part(
-					new ByteArrayContent(null, studentId.toString().getBytes()));
-			part.setHeaders(new HttpHeaders().set("Content-Disposition",
-					String.format("form-data; name=\"%s\"", "studentId")));
+			for (String name : parameters.keySet()) {
+				MultipartContent.Part part = new MultipartContent.Part(
+						new ByteArrayContent(null, parameters.get(name).toString().getBytes()));
+				part.setHeaders(new HttpHeaders().set("Content-Disposition",
+						String.format("form-data; name=\"%s\"", name)));
 
-			content.addPart(part);
-			// }
+				content.addPart(part);
+			}
 
 			HttpRequest request = requestFactory
 					.buildPostRequest(
@@ -71,13 +74,14 @@ public class TDDCriteriaRestClient {
 
 			HttpResponse resp = request.execute();
 
-			System.out.println(resp.parseAsString());
+			return f.getName();
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new RuntimeException("ECLIPSE ERROR ?");
 		}
 	}
 
-	public void createStudent(Student student) {
+	public Student createStudent(Student student) {
 		try {
 			HttpRequest request = requestFactory
 					.buildPostRequest(
@@ -87,11 +91,12 @@ public class TDDCriteriaRestClient {
 									gson.toJson(student)));
 
 			request.getHeaders().setContentType("application/json");
-			HttpResponse feita = request.execute();
+			HttpResponse resp = request.execute();
 
-			System.out.println(feita.parseAsString());
+			return (Student) gson.fromJson(resp.parseAsString(), Student.class);
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new RuntimeException("ECLIPSE ERROR ?");
 		}
 	}
 }

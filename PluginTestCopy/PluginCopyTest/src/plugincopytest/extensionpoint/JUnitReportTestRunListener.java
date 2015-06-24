@@ -7,7 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import net.bhpachulski.tddcriteriaserver.file.FileUtil;
+import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
+import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
 import net.bhpachulski.tddcriteriaserver.restclient.TDDCriteriaRestClient;
 
 import org.eclipse.core.resources.IProject;
@@ -16,6 +19,8 @@ import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.junit.model.ITestRunSession;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -44,57 +49,39 @@ public class JUnitReportTestRunListener extends TestRunListener {
 
 	private TestSuiteSession tss;
 	private IProject project;
-	private String folderTrack = "junitTrack";
-	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy_M_d_HH_mm_ss");
-
-	private void geraArquivo() {
-		try {
-
-			File f = new File(getProject().getLocation().toOSString() + "/"
-					+ folderTrack);
-			if (!f.exists()) {
-				f.mkdir();
-			}
-
-			JacksonXmlModule module = new JacksonXmlModule();
-
-			module.setDefaultUseWrapper(false);
-			ObjectMapper xmlMapper = new XmlMapper(module);
-
-			xmlMapper.writeValue(new File(getProject().getLocation()
-					.toOSString()
-					+ "/"
-					+ folderTrack
-					+ "/juTrack_"
-					+ sdf.format(new Date())
-					+ ".xml"), tss);
-		} catch (IOException e) {
-			
-		}
-	}
+	private FileUtil futil = new FileUtil();
 	
-	public void sentFiles () {
-		TDDCriteriaRestClient restClient = new TDDCriteriaRestClient();
-		
-		Student s = new Student();
-		s.setId(1);
-		s.setName("Bruno");
-		
-		restClient.createStudent(s);
-		
-		
-		File f = new File(getProject().getLocation().toOSString() + "/coverageTrack/track_2015_6_21_14_58_37.xml");
-		
-		restClient.sendStudentFile(1, f);
-		
+	private TDDCriteriaProjectProperties prop;
+	
+	public void verifyProjectProperties () {
+		try {
+			if (futil.projectFileExists(getProject())) {
+				setProp(futil.getPropertiesFileAsObject(getProject()));
+			} else {
+				Student student = new TDDCriteriaRestClient().createStudent(new Student("TestBruno"));
+				setProp(futil.createProjectConfigFile(getProject(), student));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("ECLIPSE ERROR ?");
+		}				
 	}
 
 	@Override
 	public void sessionFinished(ITestRunSession session) {
 		tss.setFinished(new Date());
 
-		geraArquivo();
-		sentFiles ();
+		try {
+			String trackFileName = futil.generateTrackFile(getProject(), tss);
+			new TDDCriteriaRestClient().sendStudentFile(getProp().getCurrentStudent().getId(), futil.getJUnitFileAsName(getProject(), trackFileName));
+			getProp().setSentFiles(FileType.JUNIT.toString(), trackFileName);
+			
+//			futil.updateProjectConfigFile(getProject(), getProp());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("ECLIPSE ERROR ?");
+		}
+		
 		super.sessionFinished(session);
 	}
 
@@ -103,15 +90,11 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		tss = new TestSuiteSession();
 		tss.setLaunched(new Date());
 		setProject(session.getLaunchedProject().getProject());
+		
+		if (prop == null)
+			verifyProjectProperties ();
+		
 		super.sessionLaunched(session);
-	}
-
-	public IProject getProject() {
-		return project;
-	}
-
-	public void setProject(IProject project) {
-		this.project = project;
 	}
 
 	@Override
@@ -139,6 +122,22 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	@Override
 	public void testCaseStarted(ITestCaseElement testCaseElement) {
 		super.testCaseStarted(testCaseElement);
+	}
+
+	public TDDCriteriaProjectProperties getProp() {
+		return prop;
+	}
+
+	public void setProp(TDDCriteriaProjectProperties prop) {
+		this.prop = prop;
+	}
+	
+	public IProject getProject() {
+		return project;
+	}
+
+	public void setProject(IProject project) {
+		this.project = project;
 	}
 
 }
