@@ -10,6 +10,7 @@ import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
 import net.bhpachulski.tddcriteriaserver.restclient.TDDCriteriaRestClient;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IProject;
 
 import plugincopytest.model.TestSuiteSession;
@@ -59,7 +60,11 @@ public class FileUtil {
 	public void updateProjectConfigFile(IProject p,
 			TDDCriteriaProjectProperties projectConfigFile) {
 		try {			
-			new File(getTDDCriteriaConfigFilePath(p)).delete();
+			File arquivoAntigo = new File(getTDDCriteriaConfigFilePath(p));
+			
+			if (arquivoAntigo.isFile())
+				arquivoAntigo.delete();
+			
 			xmlMapper.writeValue(new File(getTDDCriteriaConfigFilePath(p)), projectConfigFile);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -79,10 +84,11 @@ public class FileUtil {
 		return xmlMapper.readValue(f, TDDCriteriaProjectProperties.class);
 	}
 	
-	public void createFolderIfNotExists (String path) {
+	public void createFolderIfNotExists (String path) throws IOException {
 		File f = new File(path);
 		if (!f.exists()) 
-			f.mkdir();
+			FileUtils.forceMkdir(f);
+				
 	}
 
 	public String generateTrackFile(IProject p, TestSuiteSession tss) throws JsonGenerationException, JsonMappingException, IOException {

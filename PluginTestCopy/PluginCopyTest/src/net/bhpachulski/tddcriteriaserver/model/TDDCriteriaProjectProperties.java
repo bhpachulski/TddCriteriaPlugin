@@ -1,16 +1,19 @@
 package net.bhpachulski.tddcriteriaserver.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 public class TDDCriteriaProjectProperties {
 
 	private Date created = new Date();
 	private Student currentStudent;
-	private Map<String, List<String>> sentFiles = new HashMap<String, List<String>>();
+	private List<String> sentFiles = new ArrayList<String>();
 	
 	public Date getCreated() {
 		return created;
@@ -28,15 +31,20 @@ public class TDDCriteriaProjectProperties {
 		this.currentStudent = currentStudent;
 	}
 	
-	public Map<String, List<String>> getSentFiles() {
+	public List<String> getSentFiles() {
 		return sentFiles;
-	}
+	}	
 	
-	public void setSentFiles(String ft, String sentFile) {
-		if (this.sentFiles.containsKey(ft))
-			this.sentFiles.get(ft).add(sentFile);
-		else 
-			this.sentFiles.put(ft, Arrays.asList(sentFile));
+	public void setSentFiles(List<String> sentFiles) {
+		this.sentFiles = sentFiles;
+	}
+
+	public void setSentFile(String sentFile) {
+		if (sentFiles == null)
+			sentFiles = new ArrayList<String>();
+		
+		if (!this.sentFiles.contains(sentFile))
+			this.sentFiles.add(sentFile);
 	}	
 	
 }

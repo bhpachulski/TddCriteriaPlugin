@@ -58,6 +58,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 			if (futil.projectFileExists(getProject())) {
 				setProp(futil.getPropertiesFileAsObject(getProject()));
 			} else {
+				//macadress
 				Student student = new TDDCriteriaRestClient().createStudent(new Student("TestBruno"));
 				setProp(futil.createProjectConfigFile(getProject(), student));
 			}
@@ -74,9 +75,9 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		try {
 			String trackFileName = futil.generateTrackFile(getProject(), tss);
 			new TDDCriteriaRestClient().sendStudentFile(getProp().getCurrentStudent().getId(), futil.getJUnitFileAsName(getProject(), trackFileName));
-			getProp().setSentFiles(FileType.JUNIT.toString(), trackFileName);
+			getProp().setSentFile(FileType.JUNIT.getFolder() + "/" + trackFileName); 
 			
-//			futil.updateProjectConfigFile(getProject(), getProp());
+			futil.updateProjectConfigFile(getProject(), getProp());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("ECLIPSE ERROR ?");
