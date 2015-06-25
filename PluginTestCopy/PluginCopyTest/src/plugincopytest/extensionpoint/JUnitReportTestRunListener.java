@@ -72,10 +72,12 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	public void sessionFinished(ITestRunSession session) {
 		tss.setFinished(new Date());
 
-		try {
+		try {			
 			String trackFileName = futil.generateTrackFile(getProject(), tss);
 			new TDDCriteriaRestClient().sendStudentFile(getProp().getCurrentStudent().getId(), futil.getJUnitFileAsName(getProject(), trackFileName));
 			getProp().setSentFile(FileType.JUNIT.getFolder() + "/" + trackFileName); 
+			
+			sendEclemmaFiles(); 			
 			
 			futil.updateProjectConfigFile(getProject(), getProp());
 		} catch (Exception e) {
@@ -84,6 +86,15 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		}
 		
 		super.sessionFinished(session);
+	}
+
+	private void sendEclemmaFiles() {
+		for (File f : futil.getAllCoverageFiles (getProject())) {
+			if (!getProp().getSentFiles().contains(FileType.ECLEMMA.getFolder() + "/" + f.getName())) {
+				new TDDCriteriaRestClient().sendStudentFile(getProp().getCurrentStudent().getId(), futil.getEclemmaFileAsName(getProject(), f.getName()));
+				getProp().setSentFile(FileType.ECLEMMA.getFolder() + "/" + f.getName());
+			}
+		}
 	}
 
 	@Override

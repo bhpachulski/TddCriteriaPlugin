@@ -3,7 +3,10 @@ package net.bhpachulski.tddcriteriaserver.file;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
@@ -112,6 +115,16 @@ public class FileUtil {
 	
 	public File getJUnitFileAsName (IProject p, String name) {
 		return new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder() + "/" + name);
+	}
+	
+	public File getEclemmaFileAsName (IProject p, String name) {
+		return new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.ECLEMMA.getFolder() + "/" + name);
+	}
+	
+	public List<File> getAllCoverageFiles (IProject p) {
+		List<File> arquivos = Arrays.asList(new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.ECLEMMA.getFolder() + "/").listFiles());
+		
+		return arquivos;
 	}
 
 }
