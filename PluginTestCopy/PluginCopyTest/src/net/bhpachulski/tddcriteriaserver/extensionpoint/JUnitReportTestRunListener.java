@@ -1,46 +1,20 @@
-package plugincopytest.extensionpoint;
+package net.bhpachulski.tddcriteriaserver.extensionpoint;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import net.bhpachulski.tddcriteriaserver.file.FileUtil;
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
+import net.bhpachulski.tddcriteriaserver.model.StudentFile;
 import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
+import net.bhpachulski.tddcriteriaserver.network.util.TDDCriteriaNetworkUtil;
 import net.bhpachulski.tddcriteriaserver.restclient.TDDCriteriaRestClient;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.junit.TestRunListener;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.junit.model.ITestRunSession;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.google.api.client.http.ByteArrayContent;
-import com.google.api.client.http.FileContent;
-import com.google.api.client.http.HttpContent;
-import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.http.HttpMediaType;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.MultipartContent;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.http.json.JsonHttpContent;
-import com.google.api.client.json.JsonObjectParser;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.Maps;
-import com.google.gson.Gson;
 
 import plugincopytest.model.TestCase;
 import plugincopytest.model.TestSuiteSession;
@@ -50,6 +24,8 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	private TestSuiteSession tss;
 	private IProject project;
 	private FileUtil futil = new FileUtil();
+	private TDDCriteriaNetworkUtil networkUtil = new TDDCriteriaNetworkUtil();
+	private TDDCriteriaRestClient restClient = new TDDCriteriaRestClient();
 	
 	private TDDCriteriaProjectProperties prop;
 	
@@ -58,8 +34,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 			if (futil.projectFileExists(getProject())) {
 				setProp(futil.getPropertiesFileAsObject(getProject()));
 			} else {
-				//macadress
-				Student student = new TDDCriteriaRestClient().createStudent(new Student("TestBruno"));
+				Student student = restClient.createStudent(new Student(networkUtil.getMacAddress()));
 				setProp(futil.createProjectConfigFile(getProject(), student));
 			}
 		} catch (Exception e) {
@@ -73,11 +48,10 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		tss.setFinished(new Date());
 
 		try {			
-			String trackFileName = futil.generateTrackFile(getProject(), tss);
-			new TDDCriteriaRestClient().sendStudentFile(getProp().getCurrentStudent().getId(), futil.getJUnitFileAsName(getProject(), trackFileName));
-			getProp().setSentFile(FileType.JUNIT.getFolder() + "/" + trackFileName); 
+			futil.generateTrackFile(getProject(), tss);
 			
-			sendEclemmaFiles(); 			
+			sendFiles(FileType.JUNIT);
+			sendFiles(FileType.ECLEMMA);
 			
 			futil.updateProjectConfigFile(getProject(), getProp());
 		} catch (Exception e) {
@@ -87,12 +61,13 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		
 		super.sessionFinished(session);
 	}
-
-	private void sendEclemmaFiles() {
-		for (File f : futil.getAllCoverageFiles (getProject())) {
-			if (!getProp().getSentFiles().contains(FileType.ECLEMMA.getFolder() + "/" + f.getName())) {
-				new TDDCriteriaRestClient().sendStudentFile(getProp().getCurrentStudent().getId(), futil.getEclemmaFileAsName(getProject(), f.getName()));
-				getProp().setSentFile(FileType.ECLEMMA.getFolder() + "/" + f.getName());
+	
+	private void sendFiles(FileType ft) {
+		for (File f : futil.getAllFiles (ft, getProject())) {
+			if (!getProp().getSentFiles().contains(new StudentFile(f.getName(), ft))) {				
+				StudentFile sf = restClient.sendStudentFile(getProp().getCurrentStudent().getId(), futil.getFileAsName(ft, getProject(), f.getName()), ft);			
+				
+				getProp().setSentFile(sf);
 			}
 		}
 	}

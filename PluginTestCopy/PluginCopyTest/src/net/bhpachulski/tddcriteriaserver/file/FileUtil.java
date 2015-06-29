@@ -113,16 +113,12 @@ public class FileUtil {
 		+ "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_CONFIG_FILE + ".xml";
 	}
 	
-	public File getJUnitFileAsName (IProject p, String name) {
-		return new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder() + "/" + name);
+	public File getFileAsName (FileType ft, IProject p, String name) {
+		return new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + ft.getFolder() + "/" + name);
 	}
 	
-	public File getEclemmaFileAsName (IProject p, String name) {
-		return new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.ECLEMMA.getFolder() + "/" + name);
-	}
-	
-	public List<File> getAllCoverageFiles (IProject p) {
-		List<File> arquivos = Arrays.asList(new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.ECLEMMA.getFolder() + "/").listFiles());
+	public List<File> getAllFiles (FileType ft, IProject p) {
+		List<File> arquivos = Arrays.asList(new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + ft.getFolder() + "/").listFiles());
 		
 		return arquivos;
 	}

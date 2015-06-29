@@ -13,7 +13,7 @@ public class TDDCriteriaProjectProperties {
 
 	private Date created = new Date();
 	private Student currentStudent;
-	private List<String> sentFiles = new ArrayList<String>();
+	private List<StudentFile> sentFiles = new ArrayList<StudentFile>();
 	
 	public Date getCreated() {
 		return created;
@@ -31,17 +31,17 @@ public class TDDCriteriaProjectProperties {
 		this.currentStudent = currentStudent;
 	}
 	
-	public List<String> getSentFiles() {
+	public List<StudentFile> getSentFiles() {
 		return sentFiles;
 	}	
 	
-	public void setSentFiles(List<String> sentFiles) {
+	public void setSentFiles(List<StudentFile> sentFiles) {
 		this.sentFiles = sentFiles;
 	}
 
-	public void setSentFile(String sentFile) {
+	public void setSentFile(StudentFile sentFile) {
 		if (sentFiles == null)
-			sentFiles = new ArrayList<String>();
+			sentFiles = new ArrayList<StudentFile>();
 		
 		if (!this.sentFiles.contains(sentFile))
 			this.sentFiles.add(sentFile);

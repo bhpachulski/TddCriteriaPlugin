@@ -39,7 +39,7 @@ public class TDDCriteriaRestClient {
 				}
 			});
 
-	public String sendStudentFile(Integer studentId, File f) {
+	public StudentFile sendStudentFile(Integer studentId, File f, FileType ft) {
 		try {
 
 			MultipartContent content = new MultipartContent()
@@ -55,7 +55,9 @@ public class TDDCriteriaRestClient {
 
 			Map<String, String> parameters = Maps.newHashMap();
 			parameters.put("studentId", studentId.toString());
-			parameters.put("fileType", FileType.JUNIT.getId().toString()); 
+			parameters.put("fileType", ft.getId().toString());
+			parameters.put("fileName", f.getName());
+			
 
 			for (String name : parameters.keySet()) {
 				MultipartContent.Part part = new MultipartContent.Part(
@@ -69,12 +71,12 @@ public class TDDCriteriaRestClient {
 			HttpRequest request = requestFactory
 					.buildPostRequest(
 							new CriteriaTddGenericUrl(
-									"http://localhost:10080/tddCriteria/service/tddCriteriaService/addStudentFile"),
+									"http://localhost:8080/service/tddCriteriaService/addStudentFile"),
 							content);
 
 			HttpResponse resp = request.execute();
 
-			return f.getName();
+			return (StudentFile) gson.fromJson(resp.parseAsString(), StudentFile.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("ECLIPSE ERROR ?");
@@ -86,7 +88,7 @@ public class TDDCriteriaRestClient {
 			HttpRequest request = requestFactory
 					.buildPostRequest(
 							new CriteriaTddGenericUrl(
-									"http://localhost:10080/tddCriteria/service/tddCriteriaService/addStudent"),
+									"http://localhost:8080/service/tddCriteriaService/addStudent"),
 							ByteArrayContent.fromString(null,
 									gson.toJson(student)));
 

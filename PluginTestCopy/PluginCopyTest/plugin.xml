@@ -6,7 +6,7 @@
       <actionSet
             id="PluginCopyTest.actionSet"
             label="Sample Action Set"
-            visible="true">
+            visible="false">
          
          <menu
                id="sampleMenu"
@@ -26,9 +26,6 @@
                tooltip="Hello, Eclipse world">
          </action>
       </actionSet>
-   </extension>
-   <extension
-         point="org.eclipse.core.contenttype.contentTypes">
    </extension>
    
    <extension point="org.eclipse.ui.popupMenus">
@@ -57,7 +54,7 @@
    </extension>
    
 	<extension point="org.eclipse.jdt.junit.testRunListeners">
-		<testRunListener class="plugincopytest.extensionpoint.JUnitReportTestRunListener"/>
+		<testRunListener class="net.bhpachulski.tddcriteriaserver.extensionpoint.JUnitReportTestRunListener"/>
 	</extension>
    
 </plugin>
