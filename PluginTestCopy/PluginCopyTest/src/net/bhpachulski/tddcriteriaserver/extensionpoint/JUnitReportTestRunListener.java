@@ -3,6 +3,7 @@ package net.bhpachulski.tddcriteriaserver.extensionpoint;
 import java.io.File;
 import java.util.Date;
 
+import net.bhpachulski.tddcriteriaserver.exception.TDDCriteriaException;
 import net.bhpachulski.tddcriteriaserver.file.FileUtil;
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
@@ -15,6 +16,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.junit.TestRunListener;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.junit.model.ITestRunSession;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.ui.PlatformUI;
 
 import plugincopytest.model.TestCase;
 import plugincopytest.model.TestSuiteSession;
@@ -39,7 +42,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("ECLIPSE ERROR ?");
+			throw new TDDCriteriaException(getProject());
 		}				
 	}
 
@@ -50,13 +53,15 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		try {			
 			futil.generateTrackFile(getProject(), tss);
 			
+			Thread.sleep(150);
 			sendFiles(FileType.JUNIT);
 			sendFiles(FileType.ECLEMMA);
 			
-			futil.updateProjectConfigFile(getProject(), getProp());
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("ECLIPSE ERROR ?");
+			throw new TDDCriteriaException(getProject());
+		} finally {
+			futil.updateProjectConfigFile(getProject(), getProp());
 		}
 		
 		super.sessionFinished(session);
@@ -64,7 +69,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	
 	private void sendFiles(FileType ft) {
 		for (File f : futil.getAllFiles (ft, getProject())) {
-			if (!getProp().getSentFiles().contains(new StudentFile(f.getName(), ft))) {				
+			if (!getProp().getSentFiles().contains(new StudentFile(f.getName() + "asdasd", ft))) {				
 				StudentFile sf = restClient.sendStudentFile(getProp().getCurrentStudent().getId(), futil.getFileAsName(ft, getProject(), f.getName()), ft);			
 				
 				getProp().setSentFile(sf);

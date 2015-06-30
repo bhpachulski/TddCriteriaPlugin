@@ -1,7 +1,11 @@
 package net.bhpachulski.tddcriteriaserver.file;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +36,7 @@ public class FileUtil {
 	
 	private static final String TDD_CRITERIA_CONFIG_FOLDER = "tddCriteria"; 
 	private static final String TDD_CRITERIA_CONFIG_FILE = "tddCriteriaProjectProperties";
+	private static final String TDD_CRITERIA_ERROR_FOLDER = "errorLog";
 	
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy_M_d_HH_mm_ss");	
 
@@ -45,6 +50,7 @@ public class FileUtil {
 			Student student) {
 		try {			
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER);
+			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_ERROR_FOLDER);
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder());
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.ECLEMMA.getFolder());
 
@@ -121,6 +127,21 @@ public class FileUtil {
 		List<File> arquivos = Arrays.asList(new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + ft.getFolder() + "/").listFiles());
 		
 		return arquivos;
+	}
+	
+	public void createTxtFile (IProject p, String value) {
+		Writer writer = null;
+
+		try {
+		    writer = new BufferedWriter(new OutputStreamWriter(
+		          new FileOutputStream(p.getLocation().toOSString()
+		        			+ "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_ERROR_FOLDER + "/" +"errorLog.txt"), "utf-8"));
+		    writer.write(value);
+		    
+		    writer.close();
+		} catch (IOException ex) {
+			
+		} 
 	}
 
 }
