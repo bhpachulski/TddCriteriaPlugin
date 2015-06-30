@@ -69,7 +69,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	
 	private void sendFiles(FileType ft) {
 		for (File f : futil.getAllFiles (ft, getProject())) {
-			if (!getProp().getSentFiles().contains(new StudentFile(f.getName() + "asdasd", ft))) {				
+			if (!getProp().getSentFiles().contains(new StudentFile(f.getName(), ft))) {				
 				StudentFile sf = restClient.sendStudentFile(getProp().getCurrentStudent().getId(), futil.getFileAsName(ft, getProject(), f.getName()), ft);			
 				
 				getProp().setSentFile(sf);
