@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -15,9 +14,9 @@ import java.util.List;
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
-import net.bhpachulski.tddcriteriaserver.restclient.TDDCriteriaRestClient;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.monitor.FileEntry;
 import org.eclipse.core.resources.IProject;
 
 import plugincopytest.model.TestSuiteSession;
@@ -47,13 +46,14 @@ public class FileUtil {
 	}
 
 	public TDDCriteriaProjectProperties createProjectConfigFile(IProject p,
-			Student student) {
-		try {			
-			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER);
-			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_ERROR_FOLDER);
+			Student student) throws InterruptedException {
+		try {
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder());
+			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_ERROR_FOLDER);			
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.ECLEMMA.getFolder());
 
+			Thread.sleep(250);
+			
 			TDDCriteriaProjectProperties prop = new TDDCriteriaProjectProperties();
 			prop.setCurrentStudent(student);
 
@@ -74,7 +74,7 @@ public class FileUtil {
 			if (arquivoAntigo.isFile())
 				arquivoAntigo.delete();
 			
-			xmlMapper.writeValue(new File(getTDDCriteriaConfigFilePath(p)), projectConfigFile);
+			xmlMapper.writeValue(FileUtils.getFile(getTDDCriteriaConfigFilePath(p)), projectConfigFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("ECLIPSE ERROR ?");
@@ -93,11 +93,13 @@ public class FileUtil {
 		return xmlMapper.readValue(f, TDDCriteriaProjectProperties.class);
 	}
 	
-	public void createFolderIfNotExists (String path) throws IOException {
-		File f = new File(path);
+	public boolean createFolderIfNotExists (String path) throws IOException {		
+		File f = FileUtils.getFile(path);
+		
 		if (!f.exists()) 
-			FileUtils.forceMkdir(f);
-				
+			f.mkdirs();
+		
+		return true;
 	}
 
 	public String generateTrackFile(IProject p, TestSuiteSession tss) throws JsonGenerationException, JsonMappingException, IOException {
@@ -109,7 +111,9 @@ public class FileUtil {
 		String fileName = sdf.format(new Date()) + ".xml";
 		String filePath = p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder() + "/" + fileName;
 
-		xmlMapper.writeValue(new File(filePath), tss);
+		File f = FileUtils.getFile(filePath);
+		
+		xmlMapper.writeValue(f, tss);
 		
 		return fileName;
 	}

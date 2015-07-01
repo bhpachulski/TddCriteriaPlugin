@@ -16,8 +16,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.junit.TestRunListener;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.junit.model.ITestRunSession;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.PlatformUI;
 
 import plugincopytest.model.TestCase;
 import plugincopytest.model.TestSuiteSession;

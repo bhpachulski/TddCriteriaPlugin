@@ -1,13 +1,8 @@
 package net.bhpachulski.tddcriteriaserver.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 public class TDDCriteriaProjectProperties {
 
