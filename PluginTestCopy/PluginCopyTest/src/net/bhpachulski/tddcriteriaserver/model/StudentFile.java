@@ -15,10 +15,11 @@ public class StudentFile {
 	private Blob file;
 	private Date sentIn;
 	private String fileName;
-	private InputStream fileIs;
-
+	private String projectName;
 	private FileType type;
 	
+	private InputStream fileIs;
+
 	
 
 	public StudentFile(String fileName, FileType type) {
@@ -83,6 +84,14 @@ public class StudentFile {
 	public void setFileIs(InputStream fileIs) {
 		this.fileIs = fileIs;
 	}
+	
+	public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
 
 	@Override
 	public int hashCode() {

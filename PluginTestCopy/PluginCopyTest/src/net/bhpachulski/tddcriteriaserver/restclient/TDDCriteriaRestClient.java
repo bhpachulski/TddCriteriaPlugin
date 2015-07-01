@@ -39,7 +39,7 @@ public class TDDCriteriaRestClient {
 				}
 			});
 
-	public StudentFile sendStudentFile(Integer studentId, File f, FileType ft) {
+	public StudentFile sendStudentFile(Integer studentId, String projectName, File f, FileType ft) {
 		try {
 
 			MultipartContent content = new MultipartContent()
@@ -57,8 +57,8 @@ public class TDDCriteriaRestClient {
 			parameters.put("studentId", studentId.toString());
 			parameters.put("fileType", ft.getId().toString());
 			parameters.put("fileName", f.getName());
+			parameters.put("projectName", projectName);
 			
-
 			for (String name : parameters.keySet()) {
 				MultipartContent.Part part = new MultipartContent.Part(
 						new ByteArrayContent(null, parameters.get(name).toString().getBytes()));

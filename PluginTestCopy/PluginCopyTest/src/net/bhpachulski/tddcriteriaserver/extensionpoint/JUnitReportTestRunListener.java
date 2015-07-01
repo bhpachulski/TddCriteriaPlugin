@@ -53,7 +53,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		try {			
 			futil.generateTrackFile(getProject(), tss);
 			
-			Thread.sleep(150);
+			Thread.sleep(250);
 			sendFiles(FileType.JUNIT);
 			sendFiles(FileType.ECLEMMA);
 			
@@ -70,7 +70,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	private void sendFiles(FileType ft) {
 		for (File f : futil.getAllFiles (ft, getProject())) {
 			if (!getProp().getSentFiles().contains(new StudentFile(f.getName(), ft))) {				
-				StudentFile sf = restClient.sendStudentFile(getProp().getCurrentStudent().getId(), futil.getFileAsName(ft, getProject(), f.getName()), ft);			
+				StudentFile sf = restClient.sendStudentFile(getProp().getCurrentStudent().getId(), getProject().getName(), futil.getFileAsName(ft, getProject(), f.getName()), ft);			
 				
 				getProp().setSentFile(sf);
 			}
@@ -83,8 +83,8 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		tss.setLaunched(new Date());
 		setProject(session.getLaunchedProject().getProject());
 		
-		if (prop == null)
-			verifyProjectProperties ();
+//		if (prop == null)
+		verifyProjectProperties ();
 		
 		super.sessionLaunched(session);
 	}
@@ -96,7 +96,6 @@ public class JUnitReportTestRunListener extends TestRunListener {
 
 	@Override
 	public void testCaseFinished(ITestCaseElement testCaseElement) {
-
 		TestCase tc = new TestCase();
 		tc.setClassName(testCaseElement.getTestClassName());
 		tc.setMethodName(testCaseElement.getTestMethodName());
