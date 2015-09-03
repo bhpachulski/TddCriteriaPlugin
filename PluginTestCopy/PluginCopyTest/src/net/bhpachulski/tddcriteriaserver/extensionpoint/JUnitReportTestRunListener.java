@@ -48,7 +48,8 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		tss.setFinished(new Date());
 
 		try {			
-			futil.generateTrackFile(getProject(), tss);
+			futil.generateJUnitTrackFile(getProject(), tss);
+			futil.generateSrcTrackFile(getProject());
 			
 			Thread.sleep(250);
 			

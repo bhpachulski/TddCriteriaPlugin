@@ -22,5 +22,6 @@ Bundle-ClassPath: .,
  gson-2.1.jar,
  httpclient-4.0.1.jar,
  httpcore-4.0.1.jar,
- commons-io-2.4.jar
+ commons-io-2.4.jar,
+ commons-compress-1.10.jar
 Import-Package: org.eclipse.jdt.core

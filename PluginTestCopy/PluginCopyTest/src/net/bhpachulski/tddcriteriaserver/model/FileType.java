@@ -5,7 +5,7 @@ import java.util.Map;
 
 public enum FileType {
 
-	JUNIT(1, "junitTrack"), ECLEMMA(2, "coverageTrack");
+	JUNIT(1, "junitTrack"), ECLEMMA(2, "coverageTrack"), SRC(3, "srcTrack");
 
     private final Integer id;
     private final String folder;

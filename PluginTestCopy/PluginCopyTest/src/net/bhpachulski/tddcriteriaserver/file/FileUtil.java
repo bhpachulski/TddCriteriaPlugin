@@ -1,22 +1,36 @@
 package net.bhpachulski.tddcriteriaserver.file;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
 import net.bhpachulski.tddcriteriaserver.model.TestSuiteSession;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.monitor.FileEntry;
 import org.eclipse.core.resources.IProject;
 
@@ -35,6 +49,7 @@ public class FileUtil {
 	private static final String TDD_CRITERIA_CONFIG_FOLDER = "tddCriteria"; 
 	private static final String TDD_CRITERIA_CONFIG_FILE = "tddCriteriaProjectProperties";
 	private static final String TDD_CRITERIA_ERROR_FOLDER = "errorLog";
+	private static final String SRC_FOLDER = "src";
 	
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy_M_d_HH_mm_ss");	
 
@@ -50,7 +65,8 @@ public class FileUtil {
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder());
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_ERROR_FOLDER);			
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.ECLEMMA.getFolder());
-
+			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.SRC.getFolder());
+			
 			Thread.sleep(250);
 			
 			TDDCriteriaProjectProperties prop = new TDDCriteriaProjectProperties();
@@ -101,7 +117,7 @@ public class FileUtil {
 		return true;
 	}
 
-	public String generateTrackFile(IProject p, TestSuiteSession tss) throws JsonGenerationException, JsonMappingException, IOException {
+	public String generateJUnitTrackFile(IProject p, TestSuiteSession tss) throws JsonGenerationException, JsonMappingException, IOException {
 		JacksonXmlModule module = new JacksonXmlModule();
 
 		module.setDefaultUseWrapper(false);
@@ -146,5 +162,45 @@ public class FileUtil {
 			
 		} 
 	}
+	
+	public void generateSrcTrackFile (IProject p) throws IOException, ArchiveException {
+		String fileName = sdf.format(new Date()) + ".zip";
+		String zipFilePath = p.getLocation().toOSString() + File.separator + TDD_CRITERIA_CONFIG_FOLDER + File.separator + FileType.SRC.getFolder() + "/" + fileName;
+		System.out.println(fileName);
+		System.out.println(zipFilePath);
+		File srcFolder = new File (p.getLocation().toOSString() + File.separator + SRC_FOLDER);
+		File zipFile = new File(zipFilePath);
+		
+		addFilesToZip(srcFolder, zipFile);
+	}
+	
+	private void addFilesToZip(File source, File destination) throws IOException, ArchiveException {
+        OutputStream archiveStream = new FileOutputStream(destination);
+        ArchiveOutputStream archive = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, archiveStream);
+
+        Collection<File> fileList = FileUtils.listFiles(source, null, true);
+
+        for (File file : fileList) {
+            String entryName = getEntryName(source, file);
+            ZipArchiveEntry entry = new ZipArchiveEntry(entryName);
+            archive.putArchiveEntry(entry);
+
+            BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
+
+            IOUtils.copy(input, archive);
+            input.close();
+            archive.closeArchiveEntry();
+        }
+
+        archive.finish();
+        archiveStream.close();
+    }
+	
+	private String getEntryName(File source, File file) throws IOException {
+        int index = source.getAbsolutePath().length() + 1;
+        String path = file.getCanonicalPath();
+
+        return path.substring(index);
+    }
 
 }
