@@ -9,6 +9,8 @@ import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.StudentFile;
 import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
+import net.bhpachulski.tddcriteriaserver.model.TestCase;
+import net.bhpachulski.tddcriteriaserver.model.TestSuiteSession;
 import net.bhpachulski.tddcriteriaserver.network.util.TDDCriteriaNetworkUtil;
 import net.bhpachulski.tddcriteriaserver.restclient.TDDCriteriaRestClient;
 
@@ -16,9 +18,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.junit.TestRunListener;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
 import org.eclipse.jdt.junit.model.ITestRunSession;
-
-import plugincopytest.model.TestCase;
-import plugincopytest.model.TestSuiteSession;
 
 public class JUnitReportTestRunListener extends TestRunListener {
 
@@ -52,6 +51,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 			futil.generateTrackFile(getProject(), tss);
 			
 			Thread.sleep(250);
+			
 			sendFiles(FileType.JUNIT);
 			sendFiles(FileType.ECLEMMA);
 			
@@ -81,7 +81,6 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		tss.setLaunched(new Date());
 		setProject(session.getLaunchedProject().getProject());
 		
-//		if (prop == null)
 		verifyProjectProperties ();
 		
 		super.sessionLaunched(session);

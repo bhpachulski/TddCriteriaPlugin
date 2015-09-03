@@ -10,6 +10,10 @@ public class TDDCriteriaProjectProperties {
 	private Student currentStudent;
 	private List<StudentFile> sentFiles = new ArrayList<StudentFile>();
 	
+	private Date firstIteration;
+	private Date secondIteration;
+	private Date thirdIteration;
+	
 	public Date getCreated() {
 		return created;
 	}
@@ -40,6 +44,30 @@ public class TDDCriteriaProjectProperties {
 		
 		if (!this.sentFiles.contains(sentFile))
 			this.sentFiles.add(sentFile);
-	}	
+	}
+
+	public Date getFirstIteration() {
+		return firstIteration;
+	}
+
+	public void setFirstIteration(Date firstIteration) {
+		this.firstIteration = firstIteration;
+	}
+
+	public Date getSecondIteration() {
+		return secondIteration;
+	}
+
+	public void setSecondIteration(Date secondIteration) {
+		this.secondIteration = secondIteration;
+	}
+
+	public Date getThirdIteration() {
+		return thirdIteration;
+	}
+
+	public void setThirdIteration(Date thirdIteration) {
+		this.thirdIteration = thirdIteration;
+	}
 	
 }

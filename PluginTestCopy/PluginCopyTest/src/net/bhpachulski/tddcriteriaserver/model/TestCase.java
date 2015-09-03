@@ -1,4 +1,4 @@
-package plugincopytest.model;
+package net.bhpachulski.tddcriteriaserver.model;
 
 import org.eclipse.jdt.junit.model.ITestElement.FailureTrace;
 

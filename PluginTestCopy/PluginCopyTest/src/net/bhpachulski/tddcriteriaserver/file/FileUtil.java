@@ -14,12 +14,11 @@ import java.util.List;
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
+import net.bhpachulski.tddcriteriaserver.model.TestSuiteSession;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.monitor.FileEntry;
 import org.eclipse.core.resources.IProject;
-
-import plugincopytest.model.TestSuiteSession;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
