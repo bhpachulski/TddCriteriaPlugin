@@ -55,6 +55,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 			
 			sendFiles(FileType.JUNIT);
 			sendFiles(FileType.ECLEMMA);
+			sendFiles(FileType.SRC);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -97,7 +98,6 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		TestCase tc = new TestCase();
 		tc.setClassName(testCaseElement.getTestClassName());
 		tc.setMethodName(testCaseElement.getTestMethodName());
-//		tc.setPackageName(testCaseElement.g);
 
 		if (testCaseElement.getFailureTrace() != null) {
 			tc.setFailDetail(testCaseElement.getFailureTrace());

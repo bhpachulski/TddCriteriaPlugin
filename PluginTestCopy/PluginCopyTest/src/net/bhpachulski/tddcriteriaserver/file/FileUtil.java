@@ -166,8 +166,7 @@ public class FileUtil {
 	public void generateSrcTrackFile (IProject p) throws IOException, ArchiveException {
 		String fileName = sdf.format(new Date()) + ".zip";
 		String zipFilePath = p.getLocation().toOSString() + File.separator + TDD_CRITERIA_CONFIG_FOLDER + File.separator + FileType.SRC.getFolder() + "/" + fileName;
-		System.out.println(fileName);
-		System.out.println(zipFilePath);
+
 		File srcFolder = new File (p.getLocation().toOSString() + File.separator + SRC_FOLDER);
 		File zipFile = new File(zipFilePath);
 		
