@@ -1,4 +1,4 @@
-package plugincopytest.popup.actions;
+package net.bhpachulski.tddcriteriaserver.manu.dropdown;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,14 +22,14 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-public class NewAction implements IObjectActionDelegate {
+public class GreenAction implements IObjectActionDelegate {
 
 	private Shell shell;
 	
 	/**
 	 * Constructor for Action1.
 	 */
-	public NewAction() {
+	public GreenAction() {
 		super();
 	}
 
