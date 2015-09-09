@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PluginCopyTest
-Bundle-SymbolicName: PluginCopyTest;singleton:=true
+Bundle-SymbolicName: TDDCriteriaPlugin;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: plugincopytest.Activator
 Require-Bundle: org.eclipse.ui,
