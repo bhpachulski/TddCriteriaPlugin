@@ -24,4 +24,5 @@ Bundle-ClassPath: .,
  httpcore-4.0.1.jar,
  commons-io-2.4.jar,
  commons-compress-1.10.jar
-Import-Package: org.eclipse.jdt.core
+Import-Package: org.eclipse.debug.ui,
+ org.eclipse.jdt.core

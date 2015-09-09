@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   
+
+   <!--
    <extension point="org.eclipse.ui.popupMenus">
       
       <objectContribution
@@ -44,12 +45,15 @@
       </objectContribution>
       
    </extension>
+   -->
    
 	<extension point="org.eclipse.jdt.junit.testRunListeners">
 		<testRunListener class="net.bhpachulski.tddcriteriaserver.extensionpoint.JUnitReportTestRunListener"/>
 	</extension>
+
+<!--	
  <extension
-       point="org.eclipse.ui.actionSets">gl
+       point="org.eclipse.ui.actionSets">
        
     <actionSet
           id="PluginCopyTest.actionSet"
@@ -95,5 +99,5 @@
               
     </actionSet>
  </extension>
-   
-</plugin>
+--> 
+ </plugin>
