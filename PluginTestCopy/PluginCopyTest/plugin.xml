@@ -23,6 +23,13 @@
 				label="Inicializar Projeto"
 				menubarPath="PluginCopyTest.menu1/group1">
 			</action>
+		
+			<action class="net.bhpachulski.tddcriteriaserver.menu.dropdown.ConfigProjectAction"
+				enablesFor="1"
+				id="PluginCopyTest.configProjectAction"
+				label="Configurar Plugin"
+				menubarPath="PluginCopyTest.menu1/group1">
+			</action>
 			
 		</objectContribution>
 		
