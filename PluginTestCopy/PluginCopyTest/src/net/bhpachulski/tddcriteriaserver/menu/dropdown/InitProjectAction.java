@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bhpachulski.tddcriteriaserver.eclipse.util.EclipseUtil;
 import net.bhpachulski.tddcriteriaserver.exception.TDDCriteriaException;
 import net.bhpachulski.tddcriteriaserver.project.util.TDDCriteriaProjectUtil;
 
@@ -49,7 +50,7 @@ public class InitProjectAction implements IObjectActionDelegate {
 	 */
 	public void run(IAction action) {
 		try {
-			projectPropertiesUtil.verifyProjectProperties(getCurrentProject());
+			projectPropertiesUtil.verifyProjectProperties(EclipseUtil.getCurrentProject());
 			
 			MessageDialog.openInformation(
 					shell,
@@ -69,16 +70,5 @@ public class InitProjectAction implements IObjectActionDelegate {
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 	}
-	
-	public IProject getCurrentProject () {
-		
-		IWorkbenchWindow windowI = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IStructuredSelection selection = (IStructuredSelection) windowI.getSelectionService().getSelection();
-		Object firstElement = selection.getFirstElement();
-		IProject project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
-		
-		return project;
-		
-	}
-	
+
 }

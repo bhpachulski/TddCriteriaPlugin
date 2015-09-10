@@ -7,6 +7,7 @@ import java.util.Map;
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.StudentFile;
+import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
 import net.bhpachulski.tddcriteriaserver.model.TDDStage;
 import net.bhpachulski.tddcriteriaserver.restclient.url.CriteriaTddGenericUrl;
 
@@ -40,7 +41,10 @@ public class TDDCriteriaRestClient {
 				}
 			});
 
-	public StudentFile sendStudentFile(Integer studentId, String projectName, File f, FileType ft, TDDStage tddStage) {
+	public StudentFile sendStudentFile(
+			TDDCriteriaProjectProperties studentProp, String projectName,
+			File f, FileType ft, TDDStage tddStage) {
+
 		try {
 
 			MultipartContent content = new MultipartContent()
@@ -55,15 +59,17 @@ public class TDDCriteriaRestClient {
 			content.addPart(partFile);
 
 			Map<String, String> parameters = Maps.newHashMap();
-			parameters.put("studentId", studentId.toString());
+			parameters.put("studentId",
+					String.valueOf(studentProp.getCurrentStudent().getId()));
 			parameters.put("fileType", ft.getId().toString());
 			parameters.put("fileName", f.getName());
 			parameters.put("projectName", projectName);
 			parameters.put("tddStage", tddStage.toString());
-			
+
 			for (String name : parameters.keySet()) {
 				MultipartContent.Part part = new MultipartContent.Part(
-						new ByteArrayContent(null, parameters.get(name).toString().getBytes()));
+						new ByteArrayContent(null, parameters.get(name)
+								.toString().getBytes()));
 				part.setHeaders(new HttpHeaders().set("Content-Disposition",
 						String.format("form-data; name=\"%s\"", name)));
 
@@ -73,33 +79,33 @@ public class TDDCriteriaRestClient {
 			HttpRequest request = requestFactory
 					.buildPostRequest(
 							new CriteriaTddGenericUrl(
-									"http://localhost:8080/service/tddCriteriaService/addStudentFile"),
+									"http://"
+											+ studentProp.getIp()
+											+ ":8080/service/tddCriteriaService/addStudentFile"),
 							content);
 
 			HttpResponse resp = request.execute();
 
-			return (StudentFile) gson.fromJson(resp.parseAsString(), StudentFile.class);
+			return (StudentFile) gson.fromJson(resp.parseAsString(),
+					StudentFile.class);
 		} catch (IOException e) {
 			throw new RuntimeException("ECLIPSE ERROR ?");
 		}
 	}
 
-	public Student createStudent(Student student) {
-		try {
-			HttpRequest request = requestFactory
-					.buildPostRequest(
-							new CriteriaTddGenericUrl(
-									"http://localhost:8080/service/tddCriteriaService/addStudent"),
-							ByteArrayContent.fromString(null,
-									gson.toJson(student)));
+	public Student createStudent(
+			TDDCriteriaProjectProperties criteriaProperties, Student student) throws IOException {
 
-			request.getHeaders().setContentType("application/json");
-			HttpResponse resp = request.execute();
+		HttpRequest request = requestFactory.buildPostRequest(
+				new CriteriaTddGenericUrl("http://"
+						+ criteriaProperties.getIp()
+						+ ":8080/service/tddCriteriaService/addStudent"),
+				ByteArrayContent.fromString(null, gson.toJson(student)));
 
-			return (Student) gson.fromJson(resp.parseAsString(), Student.class);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("ECLIPSE ERROR ?");
-		}
+		request.getHeaders().setContentType("application/json");
+		HttpResponse resp = request.execute();
+
+		return (Student) gson.fromJson(resp.parseAsString(), Student.class);
+
 	}
 }

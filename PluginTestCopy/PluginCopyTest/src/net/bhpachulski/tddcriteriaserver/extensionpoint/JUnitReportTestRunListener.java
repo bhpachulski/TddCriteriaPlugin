@@ -41,19 +41,23 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		try {			
 			futil.generateJUnitTrackFile(getProject(), tss);
 			futil.generateSrcTrackFile(getProject());
+
+			// só envia para o servidor se o aluno foi registrado, ou seja, seu id está definido
+			if (getCriteriaProjectPropertiesFile().getCurrentStudent().getId() != 0) {
+				Thread.sleep(1000);
+				
+				Map<String, TDDStage> tddProjectStages = futil.readTDDStagesFile(getProject());
 			
-			Thread.sleep(1000);
-			
-			Map<String, TDDStage> tddProjectStages = futil.readTDDStagesFile(getProject());
-			
-			sendFiles(FileType.JUNIT, tddProjectStages);			
-			sendFiles(FileType.SRC, tddProjectStages);
-			sendFiles(FileType.ECLEMMA, tddProjectStages);
+				sendFiles(FileType.JUNIT, tddProjectStages);			
+				sendFiles(FileType.SRC, tddProjectStages);
+				sendFiles(FileType.ECLEMMA, tddProjectStages);
+			}
 			
 		} catch (Exception e) {
 			throw new TDDCriteriaException(getProject());
 		} finally {
-			futil.updateProjectConfigFile(getProject(), getProp());
+			futil.updateProjectConfigFile(getProject(), 
+					getCriteriaProjectPropertiesFile());
 		}
 		
 		super.sessionFinished(session);
@@ -61,15 +65,16 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	
 	private void sendFiles(FileType ft, Map<String, TDDStage> tddProjectStages) {
 		for (File f : futil.getAllFiles (ft, getProject())) {
-			if (!getProp().getSentFiles().contains(new StudentFile(f.getName(), ft))) {
+			if (!getCriteriaProjectPropertiesFile().getSentFiles().contains(new StudentFile(f.getName(), ft))) {
 
 				//ignorando os décimos de segundo do arquivo
 				TDDStage fileTDDStage = tddProjectStages.get(FilenameUtils.getBaseName(f.getName().substring(0, f.getName().length() - 1)));
 				fileTDDStage = (fileTDDStage == null) ? TDDStage.NONE : fileTDDStage;
 				
-				StudentFile sf = restClient.sendStudentFile(getProp().getCurrentStudent().getId(), getProject().getName(), futil.getFileAsName(ft, getProject(), f.getName()), ft, fileTDDStage);			
+				StudentFile sf = restClient.sendStudentFile(getCriteriaProjectPropertiesFile(), 
+						getProject().getName(), futil.getFileAsName(ft, getProject(), f.getName()), ft, fileTDDStage);			
 				
-				getProp().setSentFile(sf);
+				getCriteriaProjectPropertiesFile().setSentFile(sf);
 			}
 		}
 	}
@@ -110,7 +115,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		super.testCaseStarted(testCaseElement);
 	}
 
-	public TDDCriteriaProjectProperties getProp() {
+	public TDDCriteriaProjectProperties getCriteriaProjectPropertiesFile() {
 		return tddCriteriaPropertiesFile;
 	}
 

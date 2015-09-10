@@ -60,7 +60,7 @@ public class FileUtil {
 	}
 
 	public TDDCriteriaProjectProperties createProjectConfigFile(IProject p,
-			Student student) throws InterruptedException {
+			Student student, TDDCriteriaProjectProperties prop) throws InterruptedException {
 		try {
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder());
 			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_ERROR_FOLDER);			
@@ -69,7 +69,6 @@ public class FileUtil {
 			
 			Thread.sleep(250);
 			
-			TDDCriteriaProjectProperties prop = new TDDCriteriaProjectProperties();
 			prop.setCurrentStudent(student);
 
 			xmlMapper.writeValue(new File(getTDDCriteriaConfigFilePath(p)), prop);

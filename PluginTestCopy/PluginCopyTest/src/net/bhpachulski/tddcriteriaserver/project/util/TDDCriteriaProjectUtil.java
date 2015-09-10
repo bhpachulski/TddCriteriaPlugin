@@ -1,5 +1,7 @@
 package net.bhpachulski.tddcriteriaserver.project.util;
 
+import java.io.IOException;
+
 import org.eclipse.core.resources.IProject;
 
 import net.bhpachulski.tddcriteriaserver.exception.TDDCriteriaException;
@@ -20,8 +22,18 @@ public class TDDCriteriaProjectUtil {
 			if (futil.projectFileExists(project)) {
 				return futil.getPropertiesFileAsObject(project);
 			} else {
-				Student student = restClient.createStudent(new Student(networkUtil.getMacAddress()));
-				return futil.createProjectConfigFile(project, student);
+				
+				TDDCriteriaProjectProperties criteriaProperties = new TDDCriteriaProjectProperties();
+				
+				Student student;				
+				try {				
+					student = restClient.createStudent(criteriaProperties, new Student(networkUtil.getMacAddress()));				
+				} catch (IOException e) {
+					//será criado projeto offline
+					student = new Student(networkUtil.getMacAddress());
+				}
+				
+				return futil.createProjectConfigFile(project, student, criteriaProperties);
 			}
 		} catch (Exception e) {
 			throw new TDDCriteriaException(project);

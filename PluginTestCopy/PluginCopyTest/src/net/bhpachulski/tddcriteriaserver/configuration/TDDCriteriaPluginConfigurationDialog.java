@@ -13,11 +13,9 @@ import org.eclipse.swt.widgets.Text;
 
 public class TDDCriteriaPluginConfigurationDialog extends TitleAreaDialog {
 	
-	private Text txtFirstName;
-	private Text lastNameText;
+	private Text serverIp;
 
-	private String firstName;
-	private String lastName;
+	private String serverIP;
 
 	public TDDCriteriaPluginConfigurationDialog(Shell parentShell) {
 		super(parentShell);
@@ -26,8 +24,8 @@ public class TDDCriteriaPluginConfigurationDialog extends TitleAreaDialog {
 	@Override
 	public void create() {
 		super.create();
-		setTitle("This is my first custom dialog");
-		setMessage("This is a TitleAreaDialog", IMessageProvider.INFORMATION);
+		setTitle("Cnfiguracão - TDD Criteria Plugin");
+		setMessage("Nesta tela você pode configurar alguns parâmetros do plugin.", IMessageProvider.INFORMATION);
 	}
 
 	@Override
@@ -39,44 +37,29 @@ public class TDDCriteriaPluginConfigurationDialog extends TitleAreaDialog {
 		container.setLayout(layout);
 
 		createFirstName(container);
-		createLastName(container);
 
 		return area;
 	}
 
 	private void createFirstName(Composite container) {
-		Label lbtFirstName = new Label(container, SWT.NONE);
-		lbtFirstName.setText("First Name");
+		Label lbServerIP = new Label(container, SWT.NONE);
+		lbServerIP.setText("Server IP");
 
-		GridData dataFirstName = new GridData();
-		dataFirstName.grabExcessHorizontalSpace = true;
-		dataFirstName.horizontalAlignment = GridData.FILL;
+		GridData dataServerIp = new GridData();
+		dataServerIp.grabExcessHorizontalSpace = true;
+		dataServerIp.horizontalAlignment = GridData.FILL;
 
-		txtFirstName = new Text(container, SWT.BORDER);
-		txtFirstName.setLayoutData(dataFirstName);
-	}
-
-	private void createLastName(Composite container) {
-		Label lbtLastName = new Label(container, SWT.NONE);
-		lbtLastName.setText("Last Name");
-
-		GridData dataLastName = new GridData();
-		dataLastName.grabExcessHorizontalSpace = true;
-		dataLastName.horizontalAlignment = GridData.FILL;
-		lastNameText = new Text(container, SWT.BORDER);
-		lastNameText.setLayoutData(dataLastName);
+		serverIp = new Text(container, SWT.BORDER);
+		serverIp.setLayoutData(dataServerIp);
 	}
 
 	@Override
 	protected boolean isResizable() {
-		return true;
+		return false;
 	}
 
-	// save content of the Text fields because they get disposed
-	// as soon as the Dialog closes
 	private void saveInput() {
-		firstName = txtFirstName.getText();
-		lastName = lastNameText.getText();
+		serverIP = serverIp.getText();
 	}
 
 	@Override
@@ -85,11 +68,7 @@ public class TDDCriteriaPluginConfigurationDialog extends TitleAreaDialog {
 		super.okPressed();
 	}
 
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
+	public String getServerIp() {
+		return serverIP;
 	}
 }
