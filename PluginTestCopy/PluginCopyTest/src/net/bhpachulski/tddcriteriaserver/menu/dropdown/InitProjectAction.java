@@ -1,8 +1,11 @@
-package net.bhpachulski.tddcriteriaserver.manu.dropdown;
+package net.bhpachulski.tddcriteriaserver.menu.dropdown;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.bhpachulski.tddcriteriaserver.exception.TDDCriteriaException;
+import net.bhpachulski.tddcriteriaserver.project.util.TDDCriteriaProjectUtil;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
@@ -22,14 +25,15 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-public class GreenAction implements IObjectActionDelegate {
+public class InitProjectAction implements IObjectActionDelegate {
 
 	private Shell shell;
+	private TDDCriteriaProjectUtil projectPropertiesUtil = new TDDCriteriaProjectUtil();
 	
 	/**
 	 * Constructor for Action1.
 	 */
-	public GreenAction() {
+	public InitProjectAction() {
 		super();
 	}
 
@@ -44,27 +48,20 @@ public class GreenAction implements IObjectActionDelegate {
 	 * @see IActionDelegate#run(IAction)
 	 */
 	public void run(IAction action) {
-		IProject project = getCurrentProject ();
-		IPath projectPath = project.getLocation();
-		
-		List<String> resourceNames = new ArrayList<String>();
 		try {
-			for (IResource resource : project.members()) {
-			    resourceNames.add(resource.getName() + "-" + resource.getFullPath().toString());
-			}
-		} catch (CoreException e) {
+			projectPropertiesUtil.verifyProjectProperties(getCurrentProject());
 			
 			MessageDialog.openInformation(
 					shell,
-					"PluginCopyTest",
-					"Deu pau");
-
+					"TDDCriteria Plugin",
+					"O projeto foi inicializado com sucesso.");
+			
+		} catch (TDDCriteriaException e) {
+			MessageDialog.openInformation(
+					shell,
+					"TDDCriteria Plugin",
+					"Erro ao inicializar Projeto.");
 		}
-
-		MessageDialog.openInformation(
-			shell,
-			"PluginCopyTest",
-			"" + resourceNames + " " + projectPath.toOSString());
 	}
 
 	/**
@@ -84,36 +81,4 @@ public class GreenAction implements IObjectActionDelegate {
 		
 	}
 	
-	private static void recursiveFindCFiles(ArrayList<IResource> allCFiles, IPath path, IWorkspaceRoot myWorkspaceRoot){
-	    IContainer  container =  myWorkspaceRoot.getContainerForLocation(path);
-
-	    try {
-	        IResource[] iResources;
-	        iResources = container.members();
-	        for (IResource iR : iResources){
-	            // for c files
-	            if ("c".equalsIgnoreCase(iR.getFileExtension()))
-	                allCFiles.add(iR);
-	            if (iR.getType() == IResource.FOLDER){
-	                IPath tempPath = iR.getLocation();
-	                recursiveFindCFiles(allCFiles,tempPath,myWorkspaceRoot);
-	            }
-	        }
-	    } catch (CoreException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-	    }
-	}
-	
-	public ArrayList<IResource> getAllCFilesInProject() {
-	    ArrayList<IResource> allCFiles = new ArrayList<IResource>();
-	    IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-	    IProject project = getCurrentProject();
-
-	    IPath path = project.getLocation();
-
-	    recursiveFindCFiles(allCFiles,path,myWorkspaceRoot);
-	    return allCFiles;
-	}
-
 }

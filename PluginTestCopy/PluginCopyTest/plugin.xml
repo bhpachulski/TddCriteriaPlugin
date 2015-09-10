@@ -1,9 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   
+	
+	<extension point="org.eclipse.ui.popupMenus">
+		
+		<objectContribution
+			id="PluginCopyTest.contribution1"
+			objectClass="org.eclipse.core.resources.IProject"
+			adaptable="true">
+			
+			<menu id="PluginCopyTest.menu1"
+				label="TDD Criteria"
+				path="additions">
+				
+				<separator name="group1"> </separator>
+				
+			</menu>
+			
+			<action class="net.bhpachulski.tddcriteriaserver.menu.dropdown.InitProjectAction"
+				enablesFor="1"
+				id="PluginCopyTest.initProjectAction"
+				label="Inicializar Projeto"
+				menubarPath="PluginCopyTest.menu1/group1">
+			</action>
+			
+		</objectContribution>
+		
+	</extension>
+	
 	<extension point="org.eclipse.jdt.junit.testRunListeners">
 		<testRunListener class="net.bhpachulski.tddcriteriaserver.extensionpoint.JUnitReportTestRunListener"/>
 	</extension>
 
- </plugin>
+</plugin>

@@ -14,6 +14,7 @@ import net.bhpachulski.tddcriteriaserver.model.TDDStage;
 import net.bhpachulski.tddcriteriaserver.model.TestCase;
 import net.bhpachulski.tddcriteriaserver.model.TestSuiteSession;
 import net.bhpachulski.tddcriteriaserver.network.util.TDDCriteriaNetworkUtil;
+import net.bhpachulski.tddcriteriaserver.project.util.TDDCriteriaProjectUtil;
 import net.bhpachulski.tddcriteriaserver.restclient.TDDCriteriaRestClient;
 
 import org.apache.commons.io.FilenameUtils;
@@ -29,21 +30,9 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	private FileUtil futil = new FileUtil();
 	private TDDCriteriaNetworkUtil networkUtil = new TDDCriteriaNetworkUtil();
 	private TDDCriteriaRestClient restClient = new TDDCriteriaRestClient();
+	private TDDCriteriaProjectUtil projectUtil = new TDDCriteriaProjectUtil();
 	
-	private TDDCriteriaProjectProperties prop;
-	
-	public void verifyProjectProperties () {
-		try {
-			if (futil.projectFileExists(getProject())) {
-				setProp(futil.getPropertiesFileAsObject(getProject()));
-			} else {
-				Student student = restClient.createStudent(new Student(networkUtil.getMacAddress()));
-				setProp(futil.createProjectConfigFile(getProject(), student));
-			}
-		} catch (Exception e) {
-			throw new TDDCriteriaException(getProject());
-		}				
-	}
+	private TDDCriteriaProjectProperties tddCriteriaPropertiesFile;
 
 	@Override
 	public void sessionFinished(ITestRunSession session) {
@@ -91,7 +80,7 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		tss.setLaunched(new Date());
 		setProject(session.getLaunchedProject().getProject());
 		
-		verifyProjectProperties ();
+		setProjectProperties(projectUtil.verifyProjectProperties (getProject()));
 		
 		super.sessionLaunched(session);
 	}
@@ -122,11 +111,11 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	}
 
 	public TDDCriteriaProjectProperties getProp() {
-		return prop;
+		return tddCriteriaPropertiesFile;
 	}
 
-	public void setProp(TDDCriteriaProjectProperties prop) {
-		this.prop = prop;
+	public void setProjectProperties(TDDCriteriaProjectProperties prop) {
+		this.tddCriteriaPropertiesFile = prop;
 	}
 	
 	public IProject getProject() {
