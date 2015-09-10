@@ -29,7 +29,6 @@ public class JUnitReportTestRunListener extends TestRunListener {
 	private IProject project;
 	private FileUtil futil = new FileUtil();
 	private TDDCriteriaNetworkUtil networkUtil = new TDDCriteriaNetworkUtil();
-	private TDDCriteriaRestClient restClient = new TDDCriteriaRestClient();
 	private TDDCriteriaProjectUtil projectUtil = new TDDCriteriaProjectUtil();
 	
 	private TDDCriteriaProjectProperties tddCriteriaPropertiesFile;
@@ -42,16 +41,10 @@ public class JUnitReportTestRunListener extends TestRunListener {
 			futil.generateJUnitTrackFile(getProject(), tss);
 			futil.generateSrcTrackFile(getProject());
 
-			// só envia para o servidor se o aluno foi registrado, ou seja, seu id está definido
-			if (getCriteriaProjectPropertiesFile().getCurrentStudent().getId() != 0) {
-				Thread.sleep(1000);
-				
-				Map<String, TDDStage> tddProjectStages = futil.readTDDStagesFile(getProject());
+			Thread.sleep(1000);
 			
-				sendFiles(FileType.JUNIT, tddProjectStages);			
-				sendFiles(FileType.SRC, tddProjectStages);
-				sendFiles(FileType.ECLEMMA, tddProjectStages);
-			}
+			// só envia para o servidor se o aluno foi registrado, ou seja, seu id está definido
+			networkUtil.sendAllFiles(getCriteriaProjectPropertiesFile(), getProject());
 			
 		} catch (Exception e) {
 			throw new TDDCriteriaException(getProject());
@@ -61,22 +54,6 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		}
 		
 		super.sessionFinished(session);
-	}
-	
-	private void sendFiles(FileType ft, Map<String, TDDStage> tddProjectStages) {
-		for (File f : futil.getAllFiles (ft, getProject())) {
-			if (!getCriteriaProjectPropertiesFile().getSentFiles().contains(new StudentFile(f.getName(), ft))) {
-
-				//ignorando os décimos de segundo do arquivo
-				TDDStage fileTDDStage = tddProjectStages.get(FilenameUtils.getBaseName(f.getName().substring(0, f.getName().length() - 1)));
-				fileTDDStage = (fileTDDStage == null) ? TDDStage.NONE : fileTDDStage;
-				
-				StudentFile sf = restClient.sendStudentFile(getCriteriaProjectPropertiesFile(), 
-						getProject().getName(), futil.getFileAsName(ft, getProject(), f.getName()), ft, fileTDDStage);			
-				
-				getCriteriaProjectPropertiesFile().setSentFile(sf);
-			}
-		}
 	}
 
 	@Override
