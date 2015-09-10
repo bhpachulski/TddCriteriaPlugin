@@ -7,6 +7,7 @@ import java.util.Map;
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.StudentFile;
+import net.bhpachulski.tddcriteriaserver.model.TDDStage;
 import net.bhpachulski.tddcriteriaserver.restclient.url.CriteriaTddGenericUrl;
 
 import com.google.api.client.http.ByteArrayContent;
@@ -39,7 +40,7 @@ public class TDDCriteriaRestClient {
 				}
 			});
 
-	public StudentFile sendStudentFile(Integer studentId, String projectName, File f, FileType ft) {
+	public StudentFile sendStudentFile(Integer studentId, String projectName, File f, FileType ft, TDDStage tddStage) {
 		try {
 
 			MultipartContent content = new MultipartContent()
@@ -58,6 +59,7 @@ public class TDDCriteriaRestClient {
 			parameters.put("fileType", ft.getId().toString());
 			parameters.put("fileName", f.getName());
 			parameters.put("projectName", projectName);
+			parameters.put("tddStage", tddStage.toString());
 			
 			for (String name : parameters.keySet()) {
 				MultipartContent.Part part = new MultipartContent.Part(
@@ -78,7 +80,6 @@ public class TDDCriteriaRestClient {
 
 			return (StudentFile) gson.fromJson(resp.parseAsString(), StudentFile.class);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new RuntimeException("ECLIPSE ERROR ?");
 		}
 	}

@@ -2,6 +2,7 @@ package net.bhpachulski.tddcriteriaserver.extensionpoint;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Map;
 
 import net.bhpachulski.tddcriteriaserver.exception.TDDCriteriaException;
 import net.bhpachulski.tddcriteriaserver.file.FileUtil;
@@ -9,11 +10,13 @@ import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.StudentFile;
 import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
+import net.bhpachulski.tddcriteriaserver.model.TDDStage;
 import net.bhpachulski.tddcriteriaserver.model.TestCase;
 import net.bhpachulski.tddcriteriaserver.model.TestSuiteSession;
 import net.bhpachulski.tddcriteriaserver.network.util.TDDCriteriaNetworkUtil;
 import net.bhpachulski.tddcriteriaserver.restclient.TDDCriteriaRestClient;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.junit.TestRunListener;
 import org.eclipse.jdt.junit.model.ITestCaseElement;
@@ -38,7 +41,6 @@ public class JUnitReportTestRunListener extends TestRunListener {
 				setProp(futil.createProjectConfigFile(getProject(), student));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new TDDCriteriaException(getProject());
 		}				
 	}
@@ -51,14 +53,15 @@ public class JUnitReportTestRunListener extends TestRunListener {
 			futil.generateJUnitTrackFile(getProject(), tss);
 			futil.generateSrcTrackFile(getProject());
 			
-			Thread.sleep(250);
+			Thread.sleep(1000);
 			
-			sendFiles(FileType.JUNIT);
-			sendFiles(FileType.ECLEMMA);
-			sendFiles(FileType.SRC);
+			Map<String, TDDStage> tddProjectStages = futil.readTDDStagesFile(getProject());
+			
+			sendFiles(FileType.JUNIT, tddProjectStages);			
+			sendFiles(FileType.SRC, tddProjectStages);
+			sendFiles(FileType.ECLEMMA, tddProjectStages);
 			
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new TDDCriteriaException(getProject());
 		} finally {
 			futil.updateProjectConfigFile(getProject(), getProp());
@@ -67,10 +70,15 @@ public class JUnitReportTestRunListener extends TestRunListener {
 		super.sessionFinished(session);
 	}
 	
-	private void sendFiles(FileType ft) {
+	private void sendFiles(FileType ft, Map<String, TDDStage> tddProjectStages) {
 		for (File f : futil.getAllFiles (ft, getProject())) {
-			if (!getProp().getSentFiles().contains(new StudentFile(f.getName(), ft))) {				
-				StudentFile sf = restClient.sendStudentFile(getProp().getCurrentStudent().getId(), getProject().getName(), futil.getFileAsName(ft, getProject(), f.getName()), ft);			
+			if (!getProp().getSentFiles().contains(new StudentFile(f.getName(), ft))) {
+
+				//ignorando os décimos de segundo do arquivo
+				TDDStage fileTDDStage = tddProjectStages.get(FilenameUtils.getBaseName(f.getName().substring(0, f.getName().length() - 1)));
+				fileTDDStage = (fileTDDStage == null) ? TDDStage.NONE : fileTDDStage;
+				
+				StudentFile sf = restClient.sendStudentFile(getProp().getCurrentStudent().getId(), getProject().getName(), futil.getFileAsName(ft, getProject(), f.getName()), ft, fileTDDStage);			
 				
 				getProp().setSentFile(sf);
 			}

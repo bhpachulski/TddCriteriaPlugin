@@ -1,11 +1,12 @@
 package net.bhpachulski.tddcriteriaserver.file;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -14,15 +15,14 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+import java.util.Map;
 
 import net.bhpachulski.tddcriteriaserver.model.FileType;
 import net.bhpachulski.tddcriteriaserver.model.Student;
 import net.bhpachulski.tddcriteriaserver.model.TDDCriteriaProjectProperties;
+import net.bhpachulski.tddcriteriaserver.model.TDDStage;
 import net.bhpachulski.tddcriteriaserver.model.TestSuiteSession;
 
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -31,7 +31,6 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.monitor.FileEntry;
 import org.eclipse.core.resources.IProject;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -50,6 +49,7 @@ public class FileUtil {
 	private static final String TDD_CRITERIA_CONFIG_FILE = "tddCriteriaProjectProperties";
 	private static final String TDD_CRITERIA_ERROR_FOLDER = "errorLog";
 	private static final String SRC_FOLDER = "src";
+	private static final String TDD_CRITERIA_STAGE_FILE = TDD_CRITERIA_CONFIG_FOLDER + File.separator + "tddStageTrack.txt";
 	
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy_M_d_HH_mm_ss");	
 
@@ -201,5 +201,28 @@ public class FileUtil {
 
         return path.substring(index);
     }
+	
+	public Map<String, TDDStage> readTDDStagesFile (IProject p) {
+		
+		Map<String, TDDStage> stages = new HashMap<String, TDDStage>();
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(p.getLocation().toOSString() + File.separator + TDD_CRITERIA_STAGE_FILE))) {
+
+			String currentLine;
+
+			while ((currentLine = br.readLine()) != null) {
+				String[] valores = currentLine.trim().split(":");
+
+				//ignorando os décimos de segundo do arquivo
+				stages.put(valores[0].trim().substring(0, valores[0].trim().length() - 1), TDDStage.getStageByString(valores[1]));
+			}
+
+		} catch (IOException e) {
+			//não foi possível ler/encontrar o arquivo
+			System.out.println("não foi possível ler/encontrar o arquivo");
+		} 		
+
+		return stages;
+	}
 
 }

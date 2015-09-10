@@ -18,9 +18,9 @@ public class StudentFile {
 	private String projectName;
 	private FileType type;
 	
-	private InputStream fileIs;
-
+	private TDDStage stage;
 	
+	private InputStream fileIs;
 
 	public StudentFile(String fileName, FileType type) {
 		this.fileName = fileName;
@@ -91,6 +91,14 @@ public class StudentFile {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+    
+    public TDDStage getStage() {
+        return stage;
+    }
+
+    public void setStage(TDDStage stage) {
+        this.stage = stage;
     }
 
 	@Override
