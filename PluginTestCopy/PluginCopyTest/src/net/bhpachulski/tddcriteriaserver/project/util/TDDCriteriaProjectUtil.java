@@ -20,23 +20,36 @@ public class TDDCriteriaProjectUtil {
 	public TDDCriteriaProjectProperties verifyProjectProperties (IProject project) {
 		try {
 			if (futil.projectFileExists(project)) {
-				return futil.getPropertiesFileAsObject(project);
+				
+				TDDCriteriaProjectProperties projectConfigFile = futil.getPropertiesFileAsObject(project); 
+
+				if (projectConfigFile.getCurrentStudent().getId() == 0) {
+					Student student = findStudentId(projectConfigFile);
+					projectConfigFile.setCurrentStudent(student);
+					futil.updateProjectConfigFile(project, projectConfigFile);
+				}
+				
+				return projectConfigFile;
 			} else {
 				
 				TDDCriteriaProjectProperties criteriaProperties = new TDDCriteriaProjectProperties();
-				
-				Student student;				
-				try {				
-					student = restClient.createStudent(criteriaProperties, new Student(networkUtil.getMacAddress()));				
-				} catch (IOException e) {
-					//será criado projeto offline
-					student = new Student(networkUtil.getMacAddress());
-				}
+				Student student = findStudentId(criteriaProperties);
 				
 				return futil.createProjectConfigFile(project, student, criteriaProperties);
 			}
 		} catch (Exception e) {
 			throw new TDDCriteriaException(project);
 		}				
+	}
+
+	private Student findStudentId(TDDCriteriaProjectProperties criteriaProperties) {
+		Student student;				
+		try {				
+			student = restClient.createStudent(criteriaProperties, new Student(networkUtil.getMacAddress()));				
+		} catch (IOException e) {
+			//será criado projeto offline
+			student = new Student(networkUtil.getMacAddress());
+		}
+		return student;
 	}
 }
