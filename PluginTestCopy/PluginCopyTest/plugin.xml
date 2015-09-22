@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
 	
+	
 	<extension point="org.eclipse.ui.popupMenus">
 		
 		<objectContribution
@@ -42,8 +43,115 @@
 		
 	</extension>
 	
+	
 	<extension point="org.eclipse.jdt.junit.testRunListeners">
 		<testRunListener class="net.bhpachulski.tddcriteriaserver.extensionpoint.JUnitReportTestRunListener"/>
 	</extension>
+
+<!--	
+<extension point="org.eclipse.ui.popupMenus">		
+   		
+   <objectContribution		
+         id="PluginCopyTest.contribution1"		
+         objectClass="org.eclipse.core.resources.IProject"		
+         adaptable="true">		
+         		
+      <menu id="PluginCopyTest.menu1"		
+            label="TDD Criteria"		
+            path="additions">		
+         		
+         <separator name="group1"> </separator>		
+      		
+      </menu>		
+      		
+      <action class="net.bhpachulski.tddcriteriaserver.manu.dropdown.RefactorAction"	
+            enablesFor="1"		
+            id="PluginCopyTest.refactorAction"		
+            icon="icons/refactor.png"		
+            label="Refactor"		
+            menubarPath="PluginCopyTest.menu1/group1">		
+      </action>		
+      		
+      <action class="net.bhpachulski.tddcriteriaserver.manu.dropdown.GreenAction"	
+            enablesFor="1"		
+            id="PluginCopyTest.greenAction"		
+            icon="icons/green.png"		
+            label="Green"		
+            menubarPath="PluginCopyTest.menu1/group1">		
+      </action>		
+      		
+      <action class="net.bhpachulski.tddcriteriaserver.manu.dropdown.RedAction"		
+            enablesFor="1"		
+            id="PluginCopyTest.redAction"		
+            icon="icons/red.png"		
+            label="Red"		
+            menubarPath="PluginCopyTest.menu1/group1">		
+      </action>		
+      		
+   </objectContribution>		
+   		
+</extension>		
+-->
+
+
+<!-- atalho para menu na ide na tela principal -->
+<!--
+   <extension
+         point="org.eclipse.ui.actionSets">
+
+      <actionSet
+          id="PluginCopyTest.actionSet"
+          label="TDDCriteria Menu"
+          visible="true">
+
+          <menu
+                id="tddCriteriaMenu"
+                label="TDDCriteria Menu">
+             <separator
+                   name="TDDCriteriaGroup">
+             </separator>
+          </menu>
+
+         <action
+               class="net.bhpachulski.tddcriteriaserver.menu.dropdown.TestToggle"
+               
+               disabledIcon="tddCriteriaImg/refactor.png"
+                  hoverIcon="tddCriteriaImg/refactor.png"
+                       icon="tddCriteriaImg/refactor.png"
+               
+               id="com.mountainminds.eclemma.ui.actions.CoverageDropDownAction.TDD.Refactor"
+               label="Refactor (TDD Criteria)"
+               style="toggle"
+               menubarPath="tddCriteriaMenu/TDDCriteriaGroup"
+               toolbarPath="TDDCriteriaGroup" />
+
+         <action
+               class="com.mountainminds.eclemma.internal.ui.actions.TDDCriteriaGreenCoverageToolbarAction"
+               
+               disabledIcon="tddCriteriaImg/green.png"
+                  hoverIcon="tddCriteriaImg/green.png"
+                       icon="tddCriteriaImg/green.png"
+               
+               id="com.mountainminds.eclemma.ui.actions.CoverageDropDownAction.TDD.Green"
+               label="GREEN (TDD Criteria)"
+               style="push"
+               menubarPath="tddCriteriaMenu/TDDCriteriaGroup"
+               toolbarPath="TDDCriteriaGroup"/>
+
+         <action
+            class="com.mountainminds.eclemma.internal.ui.actions.TDDCriteriaRedCoverageToolbarAction"
+            
+            disabledIcon="tddCriteriaImg/red.png"
+               hoverIcon="tddCriteriaImg/red.png"
+                    icon="tddCriteriaImg/red.png"
+            
+            id="com.mountainminds.eclemma.ui.actions.CoverageDropDownAction.TDD.Red"
+            label="RED (TDD Criteria)"
+            style="push"
+            menubarPath="tddCriteriaMenu/TDDCriteriaGroup"
+            toolbarPath="TDDCriteriaGroup" /> 
+
+      </actionSet>
+</extension> -->		
 
 </plugin>

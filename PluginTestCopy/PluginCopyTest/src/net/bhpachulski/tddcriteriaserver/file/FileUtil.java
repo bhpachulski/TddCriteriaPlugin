@@ -44,14 +44,15 @@ public class FileUtil {
 
 	private JacksonXmlModule module;
 	private ObjectMapper xmlMapper;
-	
-	private static final String TDD_CRITERIA_CONFIG_FOLDER = "tddCriteria"; 
+
+	private static final String TDD_CRITERIA_CONFIG_FOLDER = "tddCriteria";
 	private static final String TDD_CRITERIA_CONFIG_FILE = "tddCriteriaProjectProperties";
 	private static final String TDD_CRITERIA_ERROR_FOLDER = "errorLog";
 	private static final String SRC_FOLDER = "src";
-	private static final String TDD_CRITERIA_STAGE_FILE = TDD_CRITERIA_CONFIG_FOLDER + File.separator + "tddStageTrack.txt";
-	
-	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy_M_d_HH_mm_ss");	
+	private static final String TDD_CRITERIA_STAGE_FILE = TDD_CRITERIA_CONFIG_FOLDER
+			+ File.separator + "tddStageTrack.txt";
+
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy_M_d_HH_mm_ss");
 
 	public FileUtil() {
 		module = new JacksonXmlModule();
@@ -60,35 +61,45 @@ public class FileUtil {
 	}
 
 	public TDDCriteriaProjectProperties createProjectConfigFile(IProject p,
-			Student student, TDDCriteriaProjectProperties prop) throws InterruptedException {
+			TDDCriteriaProjectProperties prop) throws InterruptedException {
 		try {
-			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder());
-			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_ERROR_FOLDER);			
-			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.ECLEMMA.getFolder());
-			createFolderIfNotExists(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.SRC.getFolder());
-			
-			Thread.sleep(250);
-			
-			prop.setCurrentStudent(student);
+			createFolderIfNotExists(p.getLocation().toOSString() + "/"
+					+ TDD_CRITERIA_CONFIG_FOLDER + "/"
+					+ FileType.JUNIT.getFolder());
+			createFolderIfNotExists(p.getLocation().toOSString() + "/"
+					+ TDD_CRITERIA_CONFIG_FOLDER + "/"
+					+ TDD_CRITERIA_ERROR_FOLDER);
+			createFolderIfNotExists(p.getLocation().toOSString() + "/"
+					+ TDD_CRITERIA_CONFIG_FOLDER + "/"
+					+ FileType.ECLEMMA.getFolder());
+			createFolderIfNotExists(p.getLocation().toOSString() + "/"
+					+ TDD_CRITERIA_CONFIG_FOLDER + "/"
+					+ FileType.SRC.getFolder());
 
-			xmlMapper.writeValue(new File(getTDDCriteriaConfigFilePath(p)), prop);
+			Thread.sleep(250);
+
+			xmlMapper.writeValue(new File(getTDDCriteriaConfigFilePath(p)),
+					prop);
 
 			return prop;
-		} catch (IOException e) {
+		} catch (Exception e) {
+			System.out.println("AQUI MERMO");
 			e.printStackTrace();
 			throw new RuntimeException("ECLIPSE ERROR ?");
 		}
 	}
-	
+
 	public void updateProjectConfigFile(IProject p,
 			TDDCriteriaProjectProperties projectConfigFile) {
-		try {			
+		try {
 			File arquivoAntigo = new File(getTDDCriteriaConfigFilePath(p));
-			
+
 			if (arquivoAntigo.isFile())
 				arquivoAntigo.delete();
-			
-			xmlMapper.writeValue(FileUtils.getFile(getTDDCriteriaConfigFilePath(p)), projectConfigFile);
+
+			xmlMapper.writeValue(
+					FileUtils.getFile(getTDDCriteriaConfigFilePath(p)),
+					projectConfigFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("ECLIPSE ERROR ?");
@@ -101,125 +112,155 @@ public class FileUtil {
 		return f.isFile();
 	}
 
-	public TDDCriteriaProjectProperties getPropertiesFileAsObject(IProject p) 
+	public TDDCriteriaProjectProperties getPropertiesFileAsObject(IProject p)
 			throws JsonParseException, JsonMappingException, IOException {
 		File f = new File(getTDDCriteriaConfigFilePath(p));
 		return xmlMapper.readValue(f, TDDCriteriaProjectProperties.class);
 	}
-	
-	public boolean createFolderIfNotExists (String path) throws IOException {		
+
+	public boolean createFolderIfNotExists(String path) throws IOException {
 		File f = FileUtils.getFile(path);
-		
-		if (!f.exists()) 
+
+		if (!f.exists())
 			f.mkdirs();
-		
+
 		return true;
 	}
 
-	public String generateJUnitTrackFile(IProject p, TestSuiteSession tss) throws JsonGenerationException, JsonMappingException, IOException {
+	public String generateJUnitTrackFile(IProject p, TestSuiteSession tss)
+			throws JsonGenerationException, JsonMappingException, IOException {
 		JacksonXmlModule module = new JacksonXmlModule();
 
 		module.setDefaultUseWrapper(false);
 		ObjectMapper xmlMapper = new XmlMapper(module);
 
 		String fileName = sdf.format(new Date()) + ".xml";
-		String filePath = p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder() + "/" + fileName;
+		String filePath = p.getLocation().toOSString() + "/"
+				+ TDD_CRITERIA_CONFIG_FOLDER + "/" + FileType.JUNIT.getFolder()
+				+ "/" + fileName;
 
 		File f = FileUtils.getFile(filePath);
-		
+
 		xmlMapper.writeValue(f, tss);
-		
+
 		return fileName;
 	}
-	
-	public String getTDDCriteriaConfigFilePath (IProject p) {
-		return p.getLocation().toOSString()
-		+ "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_CONFIG_FILE + ".xml";
+
+	public String getTDDCriteriaConfigFilePath(IProject p) {
+		return p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER
+				+ "/" + TDD_CRITERIA_CONFIG_FILE + ".xml";
 	}
-	
-	public File getFileAsName (FileType ft, IProject p, String name) {
-		return new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + ft.getFolder() + "/" + name);
+
+	public File getFileAsName(FileType ft, IProject p, String name) {
+		return new File(p.getLocation().toOSString() + "/"
+				+ TDD_CRITERIA_CONFIG_FOLDER + "/" + ft.getFolder() + "/"
+				+ name);
 	}
-	
-	public List<File> getAllFiles (FileType ft, IProject p) {
-		List<File> arquivos = Arrays.asList(new File(p.getLocation().toOSString() + "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + ft.getFolder() + "/").listFiles());
-		
+
+	public List<File> getAllFiles(FileType ft, IProject p) {
+		List<File> arquivos = Arrays.asList(new File(p.getLocation()
+				.toOSString()
+				+ "/"
+				+ TDD_CRITERIA_CONFIG_FOLDER
+				+ "/"
+				+ ft.getFolder() + "/").listFiles());
+
 		return arquivos;
 	}
-	
-	public void createTxtFile (IProject p, String value) {
+
+	public void createTxtFile(IProject p, String value) {
 		Writer writer = null;
 
 		try {
-		    writer = new BufferedWriter(new OutputStreamWriter(
-		          new FileOutputStream(p.getLocation().toOSString()
-		        			+ "/" + TDD_CRITERIA_CONFIG_FOLDER + "/" + TDD_CRITERIA_ERROR_FOLDER + "/" +"errorLog.txt"), "utf-8"));
-		    writer.write(value);
-		    
-		    writer.close();
-		} catch (IOException ex) {
-			
-		} 
-	}
-	
-	public void generateSrcTrackFile (IProject p) throws IOException, ArchiveException {
-		String fileName = sdf.format(new Date()) + ".zip";
-		String zipFilePath = p.getLocation().toOSString() + File.separator + TDD_CRITERIA_CONFIG_FOLDER + File.separator + FileType.SRC.getFolder() + "/" + fileName;
+			writer = new BufferedWriter(
+					new OutputStreamWriter(new FileOutputStream(p.getLocation()
+							.toOSString()
+							+ "/"
+							+ TDD_CRITERIA_CONFIG_FOLDER
+							+ "/"
+							+ TDD_CRITERIA_ERROR_FOLDER
+							+ "/"
+							+ "errorLog.txt"), "utf-8"));
+			writer.write(value);
 
-		File srcFolder = new File (p.getLocation().toOSString() + File.separator + SRC_FOLDER);
+			writer.close();
+		} catch (IOException ex) {
+
+		}
+	}
+
+	public void generateSrcTrackFile(IProject p) throws IOException,
+			ArchiveException {
+		String fileName = sdf.format(new Date()) + ".zip";
+		String zipFilePath = p.getLocation().toOSString() + File.separator
+				+ TDD_CRITERIA_CONFIG_FOLDER + File.separator
+				+ FileType.SRC.getFolder() + "/" + fileName;
+
+		File srcFolder = new File(p.getLocation().toOSString() + File.separator
+				+ SRC_FOLDER);
 		File zipFile = new File(zipFilePath);
-		
+
 		addFilesToZip(srcFolder, zipFile);
 	}
-	
-	private void addFilesToZip(File source, File destination) throws IOException, ArchiveException {
-        OutputStream archiveStream = new FileOutputStream(destination);
-        ArchiveOutputStream archive = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, archiveStream);
 
-        Collection<File> fileList = FileUtils.listFiles(source, null, true);
+	private void addFilesToZip(File source, File destination)
+			throws IOException, ArchiveException {
+		OutputStream archiveStream = new FileOutputStream(destination);
+		ArchiveOutputStream archive = new ArchiveStreamFactory()
+				.createArchiveOutputStream(ArchiveStreamFactory.ZIP,
+						archiveStream);
 
-        for (File file : fileList) {
-            String entryName = getEntryName(source, file);
-            ZipArchiveEntry entry = new ZipArchiveEntry(entryName);
-            archive.putArchiveEntry(entry);
+		Collection<File> fileList = FileUtils.listFiles(source, null, true);
 
-            BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
+		for (File file : fileList) {
+			String entryName = getEntryName(source, file);
+			ZipArchiveEntry entry = new ZipArchiveEntry(entryName);
+			archive.putArchiveEntry(entry);
 
-            IOUtils.copy(input, archive);
-            input.close();
-            archive.closeArchiveEntry();
-        }
+			BufferedInputStream input = new BufferedInputStream(
+					new FileInputStream(file));
 
-        archive.finish();
-        archiveStream.close();
-    }
-	
+			IOUtils.copy(input, archive);
+			input.close();
+			archive.closeArchiveEntry();
+		}
+
+		archive.finish();
+		archiveStream.close();
+	}
+
 	private String getEntryName(File source, File file) throws IOException {
-        int index = source.getAbsolutePath().length() + 1;
-        String path = file.getCanonicalPath();
+		int index = source.getAbsolutePath().length() + 1;
+		String path = file.getCanonicalPath();
 
-        return path.substring(index);
-    }
-	
-	public Map<String, TDDStage> readTDDStagesFile (IProject p) {
-		
+		return path.substring(index);
+	}
+
+	public Map<String, TDDStage> readTDDStagesFile(IProject p) {
+
 		Map<String, TDDStage> stages = new HashMap<String, TDDStage>();
-		
-		try (BufferedReader br = new BufferedReader(new FileReader(p.getLocation().toOSString() + File.separator + TDD_CRITERIA_STAGE_FILE))) {
+
+		try (BufferedReader br = new BufferedReader(new FileReader(p
+				.getLocation().toOSString()
+				+ File.separator
+				+ TDD_CRITERIA_STAGE_FILE))) {
 
 			String currentLine;
 
 			while ((currentLine = br.readLine()) != null) {
 				String[] valores = currentLine.trim().split(":");
 
-				//ignorando os décimos de segundo do arquivo
-				stages.put(valores[0].trim().substring(0, valores[0].trim().length() - 1), TDDStage.getStageByString(valores[1]));
+				// ignorando os décimos de segundo do arquivo
+				stages.put(
+						valores[0].trim().substring(0,
+								valores[0].trim().length() - 1),
+						TDDStage.getStageByString(valores[1]));
 			}
 
 		} catch (IOException e) {
-			//não foi possível ler/encontrar o arquivo
+			// não foi possível ler/encontrar o arquivo
 			System.out.println("não foi possível ler/encontrar o arquivo");
-		} 		
+		}
 
 		return stages;
 	}
